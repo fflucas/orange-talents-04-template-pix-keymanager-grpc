@@ -21,7 +21,7 @@ class RegisterKeyGrpcEndpoint(
         )
         responseObserver?.onNext(
             ResponseNewKey.newBuilder()
-                .setPixId(pixId)
+                .setPixId(pixId.toString())
                 .build()
         )
         responseObserver?.onCompleted()

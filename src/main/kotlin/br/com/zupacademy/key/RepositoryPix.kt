@@ -5,6 +5,6 @@ import io.micronaut.data.jpa.repository.JpaRepository
 import java.util.*
 
 @Repository
-interface RepositoryPix: JpaRepository<Pix, String> {
+interface RepositoryPix: JpaRepository<Pix, UUID> {
     fun existsByKeyValue(keyValue: String): Boolean
 }

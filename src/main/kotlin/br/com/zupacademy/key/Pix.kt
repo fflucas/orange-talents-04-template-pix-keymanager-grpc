@@ -27,6 +27,8 @@ class Pix(
     val associatedAcc: AssociatedAcc,
 ) {
     @Id
-    val id: String = UUID.randomUUID().toString()
+    @GeneratedValue
+    @Column(length = 16)
+    val id: UUID? = null
 
 }

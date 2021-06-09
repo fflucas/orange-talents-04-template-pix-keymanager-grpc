@@ -6,6 +6,7 @@ import br.com.zupacademy.util.exceptions.ExistingPixKeyException
 import io.micronaut.validation.Validated
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.validation.Valid
@@ -18,7 +19,7 @@ class ServiceNewRegisterKey(
 ) {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
-    fun register(@Valid request: RequestNewRegisterKey): String {
+    fun register(@Valid request: RequestNewRegisterKey): UUID {
         logger.info("Nova solicitação de registro de chave pix do tipo ${request.keyType} com o valor ${request.keyValue}")
         // checa se valor da chave ja existe
         if(request.keyValue != null){
@@ -36,6 +37,6 @@ class ServiceNewRegisterKey(
         repositoryPix.save(pix)
 
         logger.info("Chave pix do tipo ${pix.keyType} com o valor ${pix.keyValue} registrada com sucesso")
-        return pix.id
+        return pix.id!!
     }
 }
