@@ -17,7 +17,6 @@ jpa:
           auto: update
         show_sql: true
 
-
 erp.itau:
   host: http://${ITAU_HOST:`localhost:9091`}
   consulta.clientes: ${CONSULTA_CLIENTES:`/api/v1/clientes`}

@@ -1,13 +1,11 @@
 package br.com.zupacademy.key.register
 
-import br.com.zupacademy.key.Pix
-import br.com.zupacademy.key.PixKeyType
+import br.com.zupacademy.erp.itau.ClientErpItau
 import br.com.zupacademy.key.RepositoryPix
+import br.com.zupacademy.util.exceptions.ExistingPixKeyException
 import io.micronaut.validation.Validated
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.lang.Exception
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.validation.Valid
@@ -16,30 +14,28 @@ import javax.validation.Valid
 @Validated
 class ServiceNewRegisterKey(
     @field:Inject val repositoryPix: RepositoryPix,
+    @field:Inject val clientErpItau: ClientErpItau
 ) {
-    private val logger: Logger = LoggerFactory.getLogger(ServiceNewRegisterKey::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
-    fun save(@Valid request: RequestNewRegisterKey): String {
-        logger.info("Tentando registrar nova chave pix do tipo ${request.keyType} para titular ${request.idOwner}")
-        validateRequestKey(request)
-        val pix = request.convertToEntity()
-        repositoryPix.save(pix)
-        logger.info("Nova chave pix ${pix.keyValue} registrada para titular ${pix.owner}")
-        return pix.id
-    }
-
-    private fun validateRequestKey(request: RequestNewRegisterKey) {
-        // o formato da chave
-        val isValidKey = request.keyType!!.isValidKey(request.keyValue)
-        if(!isValidKey){
-            throw Exception("o formato da chave é inválido")
-        }
-        if(isValidKey && request.keyType != PixKeyType.RANDOM){
-            // se chave e unica
-            val findById: Optional<Pix> = repositoryPix.findByKeyValue(request.keyValue)
-            if(findById.isPresent){
-                throw Exception("o valor da chave não é único")
+    fun register(@Valid request: RequestNewRegisterKey): String {
+        logger.info("Nova solicitação de registro de chave pix do tipo ${request.keyType} com o valor ${request.keyValue}")
+        // checa se valor da chave ja existe
+        if(request.keyValue != null){
+            if(repositoryPix.existsByKeyValue(request.keyValue)){
+                throw ExistingPixKeyException("Chave pix ${request.keyValue} já foi cadastrada")
             }
         }
+
+        // busca dados da conta
+        val responseClientAcc = clientErpItau.consulta_contas(request.idOwner!!, request.accType!!.name)
+        val clienteAcc = responseClientAcc?.convertToEntity() ?: throw IllegalStateException("Cliente ${request.idOwner} não encontrado no ERP Itau")
+
+        // salva chave
+        val pix = request.convertToEntity(clienteAcc)
+        repositoryPix.save(pix)
+
+        logger.info("Chave pix do tipo ${pix.keyType} com o valor ${pix.keyValue} registrada com sucesso")
+        return pix.id
     }
 }

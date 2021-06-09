@@ -1,10 +1,7 @@
 package br.com.zupacademy.erp.itau
 
-data class ResponseConsultaCliente(
+data class ResponseTitular(
     val id: String,
     val nome: String,
     val cpf: String,
-    val responseInstituicao: ResponseInstituicao
-){
-
-}
+)

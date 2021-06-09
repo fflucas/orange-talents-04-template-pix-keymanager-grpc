@@ -6,5 +6,5 @@ import java.util.*
 
 @Repository
 interface RepositoryPix: JpaRepository<Pix, String> {
-    fun findByKeyValue(keyValue: String): Optional<Pix>
+    fun existsByKeyValue(keyValue: String): Boolean
 }
