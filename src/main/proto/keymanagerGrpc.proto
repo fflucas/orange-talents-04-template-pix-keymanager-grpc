@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "br.com.zupacademy";
+option java_outer_classname = "KeymanagerGrpc";
+option objc_class_prefix = "HLW";
+
+package br.com.zupacademy;
+
+service KeyManagerService {
+  rpc registerKey (RequestNewKey) returns (ResponseNewKey) {}
+}
+
+enum KeyType{
+  UNKNOWN_KEY_TYPE = 0;
+  CPF = 1;
+  PHONE_NUMBER = 2;
+  EMAIL = 3;
+  RANDOM = 4;
+}
+
+enum AccountType{
+  UNKNOWN_ACC_TYPE = 0;
+  CONTA_CORRENTE = 1;
+  CONTA_POUPANCA = 2;
+}
+
+message ErrorDetails{
+  int32 code = 1;
+  string message = 2;
+}
+
+message RequestNewKey {
+  string id_owner = 1;
+  KeyType key_type = 2;
+  string key_value = 3;
+  AccountType acc_type = 4;
+}
+
+message ResponseNewKey {
+  string pix_id = 1;
+}

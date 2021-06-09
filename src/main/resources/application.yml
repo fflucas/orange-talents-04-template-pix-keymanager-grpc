@@ -1,0 +1,23 @@
+micronaut:
+  application:
+    name: keymanagerGrpc
+datasources:
+  default:
+    url: jdbc:mysql://${MYSQL_HOST:`localhost:3306`}/${MYSQL_DATABASE}
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+    schema-generate: CREATE_DROP
+    dialect: MYSQL
+jpa:
+  default:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+        show_sql: true
+
+
+erp.itau:
+  host: http://${ITAU_HOST:`localhost:9091`}
+  consulta.clientes: ${CONSULTA_CLIENTES:`/api/v1/clientes`}
