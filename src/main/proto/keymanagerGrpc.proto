@@ -7,7 +7,8 @@ option objc_class_prefix = "HLW";
 
 package br.com.zupacademy;
 
-service KeyManagerService {
+// register key service
+service RegisterKeyService {
   rpc registerKey (RequestNewKey) returns (ResponseNewKey) {}
 }
 
@@ -39,4 +40,19 @@ message RequestNewKey {
 
 message ResponseNewKey {
   string pix_id = 1;
+}
+
+
+// delete key service
+service RemoveKeyService {
+  rpc deleteKey (RequestDeleteKey) returns (ResponseDeleteKey) {}
+}
+
+message RequestDeleteKey{
+  string id_pix = 1;
+  string id_owner = 2;
+}
+
+message ResponseDeleteKey{
+  string message = 1;
 }
