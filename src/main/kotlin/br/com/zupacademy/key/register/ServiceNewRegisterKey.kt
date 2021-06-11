@@ -30,7 +30,7 @@ class ServiceNewRegisterKey(
 
         // busca dados da conta
         val responseClientAcc = clientErpItau.consulta_contas(request.idOwner!!, request.accType!!.name)
-        val clienteAcc = responseClientAcc?.convertToEntity() ?: throw IllegalStateException("Cliente ${request.idOwner} não encontrado no ERP Itau")
+        val clienteAcc = responseClientAcc?.convertToAssociateAccount() ?: throw IllegalStateException("Cliente ${request.idOwner} não encontrado no ERP Itau")
 
         // salva chave
         val pix = request.convertToEntity(clienteAcc)

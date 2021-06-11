@@ -13,7 +13,7 @@ data class ResponseConsultaConta(
 
     }
 
-    fun convertToEntity(): AssociatedAcc {
+    fun convertToAssociateAccount(): AssociatedAcc {
         return AssociatedAcc(
             bank = instituicao.nome,
             owner = titular.nome,

@@ -1,9 +1,6 @@
 package br.com.zupacademy.key.register
 
-import br.com.zupacademy.AccountType
-import br.com.zupacademy.KeyManagerServiceGrpc
-import br.com.zupacademy.KeyType
-import br.com.zupacademy.RequestNewKey
+import br.com.zupacademy.*
 import br.com.zupacademy.erp.itau.ClientErpItau
 import br.com.zupacademy.erp.itau.ResponseConsultaConta
 import br.com.zupacademy.erp.itau.ResponseInstituicao
@@ -34,7 +31,7 @@ import javax.inject.Singleton
 @MicronautTest(transactional = false)
 internal class RegisterKeyGrpcEndpointTest(
     private val repositoryPix: RepositoryPix,
-    private val grpcClient: KeyManagerServiceGrpc.KeyManagerServiceBlockingStub
+    private val grpcClient: RegisterKeyServiceGrpc.RegisterKeyServiceBlockingStub
 ){
 
     @Inject
@@ -146,8 +143,8 @@ internal class RegisterKeyGrpcEndpointTest(
         @Singleton
         fun blockingStub(
             @GrpcChannel(GrpcServerChannel.NAME) channel: ManagedChannel
-        ): KeyManagerServiceGrpc.KeyManagerServiceBlockingStub {
-            return KeyManagerServiceGrpc.newBlockingStub(channel)
+        ): RegisterKeyServiceGrpc.RegisterKeyServiceBlockingStub {
+            return RegisterKeyServiceGrpc.newBlockingStub(channel)
         }
     }
 
@@ -183,7 +180,7 @@ internal class RegisterKeyGrpcEndpointTest(
             keyType = keyType,
             keyValue = keyValue,
             accType = AccountType.CONTA_CORRENTE,
-            associatedAcc = responseConsultaConta().convertToEntity()
+            associatedAcc = responseConsultaConta().convertToAssociateAccount()
         )
     }
 }

@@ -1,8 +1,10 @@
 package br.com.zupacademy.key.register
 
-import br.com.zupacademy.*
-import br.com.zupacademy.AccountType.*
-import br.com.zupacademy.KeyType.*
+import br.com.zupacademy.AccountType.UNKNOWN_ACC_TYPE
+import br.com.zupacademy.KeyType.UNKNOWN_KEY_TYPE
+import br.com.zupacademy.RegisterKeyServiceGrpc
+import br.com.zupacademy.RequestNewKey
+import br.com.zupacademy.ResponseNewKey
 import br.com.zupacademy.key.KeyType
 import br.com.zupacademy.util.errors.ErrorHandler
 import io.grpc.stub.StreamObserver
@@ -13,7 +15,7 @@ import javax.inject.Singleton
 @ErrorHandler
 class RegisterKeyGrpcEndpoint(
     @field:Inject val service: ServiceNewRegisterKey,
-) : KeyManagerServiceGrpc.KeyManagerServiceImplBase() {
+) : RegisterKeyServiceGrpc.RegisterKeyServiceImplBase() {
 
     override fun registerKey(request: RequestNewKey, responseObserver: StreamObserver<ResponseNewKey>?) {
         val pixId = service.register(
