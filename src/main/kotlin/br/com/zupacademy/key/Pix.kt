@@ -1,6 +1,7 @@
 package br.com.zupacademy.key
 
 import br.com.zupacademy.AccountType
+import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
 import javax.validation.Valid
@@ -25,6 +26,9 @@ class Pix(
     @Embedded
     @field:Valid
     val associatedAcc: AssociatedAcc,
+
+    @Column(nullable = false)
+    val createdAt: LocalDateTime
 ) {
     @Id
     @GeneratedValue
