@@ -1,6 +1,10 @@
 package br.com.zupacademy.key.register
 
-import br.com.zupacademy.*
+import br.com.zupacademy.AccountType
+import br.com.zupacademy.KeyType
+import br.com.zupacademy.RegisterKeyServiceGrpc
+import br.com.zupacademy.RequestNewKey
+import br.com.zupacademy.bcb.*
 import br.com.zupacademy.erp.itau.ClientErpItau
 import br.com.zupacademy.erp.itau.ResponseConsultaConta
 import br.com.zupacademy.erp.itau.ResponseInstituicao
@@ -14,6 +18,7 @@ import io.grpc.StatusRuntimeException
 import io.micronaut.context.annotation.Factory
 import io.micronaut.grpc.annotation.GrpcChannel
 import io.micronaut.grpc.server.GrpcServerChannel
+import io.micronaut.http.HttpResponse
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -23,6 +28,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
+import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -34,6 +40,8 @@ internal class RegisterKeyGrpcEndpointTest(
     private val grpcClient: RegisterKeyServiceGrpc.RegisterKeyServiceBlockingStub
 ){
 
+    @Inject
+    lateinit var clientBcb: ClientBcb
     @Inject
     lateinit var clientErpItau: ClientErpItau
 
@@ -49,15 +57,25 @@ internal class RegisterKeyGrpcEndpointTest(
     @Test
     fun `it should be able to register a new pix key`(){
         // cenario
+        val keyType = KeyType.EMAIL
+        val keyValue = "fabio@teste.com"
+
         `when`(clientErpItau.consulta_contas(id = CLIENT_ID.toString(), tipo = "CONTA_CORRENTE"))
             .thenReturn(responseConsultaConta())
+
+        var testRequestCreatePixKey = requestCreatePixKey(
+            keyType.name,
+            keyValue
+        )
+        `when`(clientBcb.createPixKey(testRequestCreatePixKey))
+            .thenReturn(HttpResponse.created(responseCreatePixKey(testRequestCreatePixKey)))
 
         // acao
         val response = grpcClient.registerKey(
             RequestNewKey.newBuilder()
                 .setIdOwner(CLIENT_ID.toString())
-                .setKeyType(KeyType.EMAIL)
-                .setKeyValue("fabio@teste.com")
+                .setKeyType(keyType)
+                .setKeyValue(keyValue)
                 .setAccType(AccountType.CONTA_CORRENTE)
                 .build()
         )
@@ -123,6 +141,37 @@ internal class RegisterKeyGrpcEndpointTest(
     }
 
     @Test
+    fun `it should not be possible to register a new pix key if the BCB Client did not respond successfully`(){
+        // cenario
+        val keyType = KeyType.EMAIL
+        val keyValue = "fabio@teste.com"
+
+        `when`(clientErpItau.consulta_contas(CLIENT_ID.toString(), "CONTA_CORRENTE"))
+            .thenReturn(responseConsultaConta())
+
+        `when`(clientBcb.createPixKey(requestCreatePixKey(keyType.name, keyValue)))
+            .thenReturn(HttpResponse.badRequest())
+
+        // acao
+        val thrown = assertThrows<StatusRuntimeException> {
+            grpcClient.registerKey(
+                RequestNewKey.newBuilder()
+                    .setIdOwner(CLIENT_ID.toString())
+                    .setKeyType(keyType)
+                    .setKeyValue(keyValue)
+                    .setAccType(AccountType.CONTA_CORRENTE)
+                    .build()
+            )
+        }
+
+        // resultado
+        with(thrown){
+            assertEquals(Status.FAILED_PRECONDITION.code, status.code)
+            assertEquals("BCB não conseguiu cadastrar a chave pix", status.description)
+        }
+    }
+
+    @Test
     fun `it should not be possible to register a new pix key if the request parameters are missing`(){
         // cenario
         val grpcRequest = RequestNewKey.newBuilder().build()
@@ -153,19 +202,24 @@ internal class RegisterKeyGrpcEndpointTest(
         return Mockito.mock(ClientErpItau::class.java)
     }
 
+    @MockBean(ClientBcb::class)
+    fun mockBcbClient(): ClientBcb {
+        return Mockito.mock(ClientBcb::class.java)
+    }
+
     private fun responseConsultaConta(): ResponseConsultaConta {
         return ResponseConsultaConta(
             tipo = "CONTA_CORRENTE",
             instituicao = ResponseInstituicao(
-                nome = "ITAU UNIBANCO",
-                ispb = "1111"
+                nome = "ITAÚ UNIBANCO S.A.",
+                ispb = "60701190"
             ),
             agencia = "0001",
-            numero = "1213",
+            numero = "291900",
             titular = ResponseTitular(
                 id = CLIENT_ID.toString(),
-                nome = "Fabio Almeida",
-                cpf = "11122233345"
+                nome = "Rafael M C Ponte",
+                cpf = "02467781054"
             ),
         )
     }
@@ -180,7 +234,41 @@ internal class RegisterKeyGrpcEndpointTest(
             keyType = keyType,
             keyValue = keyValue,
             accType = AccountType.CONTA_CORRENTE,
-            associatedAcc = responseConsultaConta().convertToAssociateAccount()
+            associatedAcc = responseConsultaConta().convertToAssociateAccount(),
+            createdAt = LocalDateTime.now()
+        )
+    }
+
+    private fun requestCreatePixKey(
+        keyType: String,
+        keyValue: String?
+    )
+    : RequestCreatePixKey {
+        val responseClientAcc = responseConsultaConta()
+
+        return RequestCreatePixKey(
+            keyType = keyType,
+            key = keyValue,
+            bankAccount = BankAccount(
+                branch = responseClientAcc.agencia,
+                accountNumber = responseClientAcc.numero,
+            ),
+            owner = Owner(
+                name = responseClientAcc.titular.nome,
+                taxIdNumber = responseClientAcc.titular.cpf
+            )
+        )
+    }
+
+    private fun responseCreatePixKey(
+        request: RequestCreatePixKey
+    ): ResponseCreatePixKey {
+        return ResponseCreatePixKey(
+            keyType = br.com.zupacademy.key.KeyType.valueOf(request.keyType),
+            key = if (request.keyType == br.com.zupacademy.key.KeyType.RANDOM.name) UUID.randomUUID().toString() else request.key!!,
+            bankAccount = request.bankAccount,
+            owner = request.owner,
+            createdAt = LocalDateTime.now(),
         )
     }
 }

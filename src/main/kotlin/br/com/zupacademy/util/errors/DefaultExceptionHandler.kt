@@ -4,6 +4,7 @@ import br.com.zupacademy.util.errors.ExceptionHandler.*
 import br.com.zupacademy.util.exceptions.ExistingPixKeyException
 import br.com.zupacademy.util.exceptions.PixKeyNotFoundException
 import io.grpc.Status
+import io.micronaut.http.client.exceptions.HttpClientException
 import javax.validation.ConstraintViolationException
 
 class DefaultExceptionHandler : ExceptionHandler<Exception> {
@@ -16,6 +17,7 @@ class DefaultExceptionHandler : ExceptionHandler<Exception> {
             is ConstraintViolationException -> Status.INVALID_ARGUMENT.withDescription(e.message)
             is ExistingPixKeyException -> Status.ALREADY_EXISTS.withDescription(e.message)
             is PixKeyNotFoundException -> Status.NOT_FOUND.withDescription(e.message)
+            is HttpClientException -> Status.OUT_OF_RANGE.withDescription(e.message)
             else -> Status.UNKNOWN.withDescription(e.message)
         }
         return StatusWithDetails(status.withCause(e))

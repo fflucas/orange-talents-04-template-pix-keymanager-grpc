@@ -1,6 +1,7 @@
 package br.com.zupacademy.key.register
 
 import br.com.zupacademy.AccountType
+import br.com.zupacademy.bcb.ResponseCreatePixKey
 import br.com.zupacademy.key.AssociatedAcc
 import br.com.zupacademy.key.KeyType
 import br.com.zupacademy.key.Pix
@@ -29,13 +30,14 @@ data class RequestNewRegisterKey(
     @field:NotNull
     val accType: AccountType?
 ){
-    fun convertToEntity(associatedAcc: AssociatedAcc): Pix{
+    fun convertToEntity(associatedAcc: AssociatedAcc, responseCreatePixKey: ResponseCreatePixKey): Pix{
         return Pix(
             idOwner = this.idOwner!!,
             keyType = this.keyType!!,
-            keyValue = if(this.keyType == KeyType.RANDOM) UUID.randomUUID().toString() else this.keyValue!!,
+            keyValue = responseCreatePixKey.key,
             accType = this.accType!!,
-            associatedAcc = associatedAcc
+            associatedAcc = associatedAcc,
+            createdAt = responseCreatePixKey.createdAt
         )
     }
 }
