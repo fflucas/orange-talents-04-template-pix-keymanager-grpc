@@ -5,4 +5,4 @@ data class ResponseInstituicao(
     val ispb: String,
 )
 
-public const val ISPB_ITAU = "60701190"
+const val ISPB_ITAU = "60701190"

@@ -1,9 +1,7 @@
 package br.com.zupacademy.key.register
 
-import br.com.zupacademy.bcb.BankAccount
-import br.com.zupacademy.bcb.ClientBcb
-import br.com.zupacademy.bcb.Owner
-import br.com.zupacademy.bcb.RequestCreatePixKey
+import br.com.zupacademy.AccountType
+import br.com.zupacademy.bcb.*
 import br.com.zupacademy.erp.itau.ClientErpItau
 import br.com.zupacademy.key.RepositoryPix
 import br.com.zupacademy.util.exceptions.ExistingPixKeyException
@@ -45,6 +43,7 @@ class ServiceNewRegisterKey(
             bankAccount = BankAccount(
                 branch = responseClientAcc.agencia,
                 accountNumber = responseClientAcc.numero,
+                accountType = BankAccountType.convertFromAccountType(responseClientAcc.tipo)
             ),
             owner = Owner(
                 name = responseClientAcc.titular.nome,

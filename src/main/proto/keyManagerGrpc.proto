@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "br.com.zupacademy";
+option java_outer_classname = "KeyManagerGrpc";
+option objc_class_prefix = "HLW";
+
+package br.com.zupacademy;
+
+import "google/protobuf/timestamp.proto";
+
+// register key service
+service RegisterKeyService {
+  rpc registerKey (RequestNewKey) returns (ResponseNewKey) {}
+}
+
+enum KeyType{
+  UNKNOWN_KEY_TYPE = 0;
+  CPF = 1;
+  PHONE_NUMBER = 2;
+  EMAIL = 3;
+  RANDOM = 4;
+}
+
+enum AccountType{
+  UNKNOWN_ACC_TYPE = 0;
+  CONTA_CORRENTE = 1;
+  CONTA_POUPANCA = 2;
+}
+
+message ErrorDetails{
+  int32 code = 1;
+  string message = 2;
+}
+
+message RequestNewKey {
+  string id_owner = 1;
+  KeyType key_type = 2;
+  string key_value = 3;
+  AccountType acc_type = 4;
+}
+
+message ResponseNewKey {
+  string pix_id = 1;
+}
+
+
+// delete key service
+service RemoveKeyService {
+  rpc deleteKey (RequestDeleteKey) returns (ResponseDeleteKey) {}
+}
+
+message RequestDeleteKey{
+  string id_pix = 1;
+  string id_owner = 2;
+}
+
+message ResponseDeleteKey{
+  string message = 1;
+}
+
+
+// show key service
+service ShowKeyService {
+  rpc showKey (RequestShowKey) returns (ResponseShowKey) {}
+}
+
+message RequestShowKey {
+  message FilterByPixId {
+    string id_owner = 1;
+    string id_pix = 2;
+  }
+  oneof filter {
+    FilterByPixId pix_id = 1;
+    string pix_key = 2;
+  }
+}
+
+message ResponseShowKey {
+  message AccountInfo{
+    string bank = 1;
+    string agency = 2;
+    string account = 3;
+    AccountType acc_type = 4;
+  }
+
+  optional string id_pix = 1;
+  optional string id_owner = 2;
+  KeyType key_type = 3;
+  string key_value = 4;
+  string name = 5;
+  string cpf = 6;
+  AccountInfo acc_info = 7;
+  google.protobuf.Timestamp created_at = 8;
+}
+
+// list keys service
+service ListKeysService {
+  rpc listKeys (RequestListKeys) returns (ResponseListKeys) {}
+}
+
+message RequestListKeys{
+  string id_owner = 1;
+}
+
+message ResponseListKeys{
+  message Key{
+    string id_pix = 1;
+    string id_owner = 2;
+    KeyType key_type = 3;
+    string key_value = 4;
+    AccountType acc_type = 5;
+    google.protobuf.Timestamp created_at = 8;
+  }
+  repeated Key pix_keys = 1;
+}

@@ -30,6 +30,10 @@ class Pix(
     @Column(nullable = false)
     val createdAt: LocalDateTime
 ) {
+    fun belongsTo(idOwner: String): Boolean {
+        return this.idOwner == idOwner
+    }
+
     @Id
     @GeneratedValue
     @Column(length = 16)

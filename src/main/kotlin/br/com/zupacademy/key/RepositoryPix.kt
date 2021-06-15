@@ -8,4 +8,6 @@ import java.util.*
 interface RepositoryPix: JpaRepository<Pix, UUID> {
     fun existsByKeyValue(keyValue: String): Boolean
     fun findByIdAndIdOwner(id: UUID, idOwner: String): Optional<Pix>
+    fun findByKeyValue(pixKey: String): Optional<Pix>
+    fun findAllByIdOwner(idOwner: String): List<Pix>
 }

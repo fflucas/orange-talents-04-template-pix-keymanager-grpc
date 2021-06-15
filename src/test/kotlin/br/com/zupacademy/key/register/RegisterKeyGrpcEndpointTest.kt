@@ -209,7 +209,7 @@ internal class RegisterKeyGrpcEndpointTest(
 
     private fun responseConsultaConta(): ResponseConsultaConta {
         return ResponseConsultaConta(
-            tipo = "CONTA_CORRENTE",
+            tipo = AccountType.CONTA_CORRENTE,
             instituicao = ResponseInstituicao(
                 nome = "ITAÚ UNIBANCO S.A.",
                 ispb = "60701190"
@@ -252,6 +252,7 @@ internal class RegisterKeyGrpcEndpointTest(
             bankAccount = BankAccount(
                 branch = responseClientAcc.agencia,
                 accountNumber = responseClientAcc.numero,
+                accountType = BankAccountType.convertFromAccountType(responseClientAcc.tipo)
             ),
             owner = Owner(
                 name = responseClientAcc.titular.nome,
@@ -262,8 +263,8 @@ internal class RegisterKeyGrpcEndpointTest(
 
     private fun responseCreatePixKey(
         request: RequestCreatePixKey
-    ): ResponseCreatePixKey {
-        return ResponseCreatePixKey(
+    ): ResponseCreateAndFindPixKey {
+        return ResponseCreateAndFindPixKey(
             keyType = br.com.zupacademy.key.KeyType.valueOf(request.keyType),
             key = if (request.keyType == br.com.zupacademy.key.KeyType.RANDOM.name) UUID.randomUUID().toString() else request.key!!,
             bankAccount = request.bankAccount,

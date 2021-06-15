@@ -159,7 +159,7 @@ internal class RemoveKeyGrpcEndpointTest(
 
     private fun responseConsultaConta(): ResponseConsultaConta {
         return ResponseConsultaConta(
-            tipo = "CONTA_CORRENTE",
+            tipo = AccountType.CONTA_CORRENTE,
             instituicao = ResponseInstituicao(
                 nome = "ITAU UNIBANCO",
                 ispb = "1111"
