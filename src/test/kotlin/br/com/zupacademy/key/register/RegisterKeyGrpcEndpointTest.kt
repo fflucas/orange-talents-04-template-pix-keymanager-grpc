@@ -60,7 +60,7 @@ internal class RegisterKeyGrpcEndpointTest(
         val keyType = KeyType.EMAIL
         val keyValue = "fabio@teste.com"
 
-        `when`(clientErpItau.consulta_contas(id = CLIENT_ID.toString(), tipo = "CONTA_CORRENTE"))
+        `when`(clientErpItau.consultaContas(id = CLIENT_ID.toString(), tipo = "CONTA_CORRENTE"))
             .thenReturn(responseConsultaConta())
 
         var testRequestCreatePixKey = requestCreatePixKey(
@@ -118,7 +118,7 @@ internal class RegisterKeyGrpcEndpointTest(
     @Test
     fun `it should not be possible to register a new pix key if the user was not returned by the itau client`(){
         // cenario
-        `when`(clientErpItau.consulta_contas(CLIENT_ID.toString(), "CONTA_CORRENTE"))
+        `when`(clientErpItau.consultaContas(CLIENT_ID.toString(), "CONTA_CORRENTE"))
             .thenReturn(null)
 
         // acao
@@ -146,7 +146,7 @@ internal class RegisterKeyGrpcEndpointTest(
         val keyType = KeyType.EMAIL
         val keyValue = "fabio@teste.com"
 
-        `when`(clientErpItau.consulta_contas(CLIENT_ID.toString(), "CONTA_CORRENTE"))
+        `when`(clientErpItau.consultaContas(CLIENT_ID.toString(), "CONTA_CORRENTE"))
             .thenReturn(responseConsultaConta())
 
         `when`(clientBcb.createPixKey(requestCreatePixKey(keyType.name, keyValue)))

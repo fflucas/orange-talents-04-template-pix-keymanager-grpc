@@ -13,7 +13,7 @@ fun RequestShowKey.toModel(
             Filter.ByPixId(idOwner = it.idOwner, idPix = it.idPix)
         }
         PIX_KEY -> Filter.ByPixKey(pixKey = pixKey)
-        FILTER_NOT_SET -> Filter.Invalid()
+        FILTER_NOT_SET -> Filter.Invalid
     }
 
     // constroi um validator

@@ -8,9 +8,6 @@ import io.micronaut.http.client.annotation.Client
 @Client(value = "\${erp.itau.host}")
 interface ClientErpItau {
 
-    @Get(value = "\${erp.itau.consulta.clientes}/{id}")
-    fun consulta_cliente(@PathVariable id: String): ResponseConsultaCliente?
-
     @Get(value = "\${erp.itau.consulta.clientes}/{id}/contas{?tipo}")
-    fun consulta_contas(@PathVariable id: String, @QueryValue tipo: String): ResponseConsultaConta?
+    fun consultaContas(@PathVariable id: String, @QueryValue tipo: String): ResponseConsultaConta?
 }

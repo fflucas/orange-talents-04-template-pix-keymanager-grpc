@@ -53,7 +53,7 @@ sealed class Filter {
     }
 
     @Introspected
-    class Invalid : Filter() {
+    object Invalid : Filter() {
         override fun call(repositoryPix: RepositoryPix, clientBcb: ClientBcb): PixKeyDto {
             throw IllegalArgumentException("Chave pix inválida ou não informada")
         }

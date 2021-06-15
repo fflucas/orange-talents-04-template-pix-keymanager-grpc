@@ -1,6 +1,5 @@
 package br.com.zupacademy.key.register
 
-import br.com.zupacademy.AccountType
 import br.com.zupacademy.bcb.*
 import br.com.zupacademy.erp.itau.ClientErpItau
 import br.com.zupacademy.key.RepositoryPix
@@ -33,7 +32,7 @@ class ServiceNewRegisterKey(
         }
 
         // busca dados da conta
-        val responseClientAcc = clientErpItau.consulta_contas(request.idOwner!!, request.accType!!.name)
+        val responseClientAcc = clientErpItau.consultaContas(request.idOwner!!, request.accType!!.name)
         val clienteAcc = responseClientAcc?.convertToAssociateAccount() ?: throw IllegalStateException("Cliente ${request.idOwner} não encontrado no ERP Itau")
 
         // integração com bcb
