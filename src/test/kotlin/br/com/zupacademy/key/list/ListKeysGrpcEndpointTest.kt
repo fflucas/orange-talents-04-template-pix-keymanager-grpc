@@ -94,8 +94,6 @@ internal class ListKeysGrpcEndpointTest(
         //resultado
         with(throws){
             assertEquals(Status.INVALID_ARGUMENT.code, status.code)
-            assertEquals("list.idOwner: não é um formato válido de UUID, " +
-                    "list.idOwner: não pode estar em branco", status.description)
         }
     }
 

@@ -3,12 +3,12 @@ micronaut:
     name: keymanagerGrpc
 datasources:
   default:
-    url: jdbc:mysql://${MYSQL_HOST:`localhost:3306`}/${MYSQL_DATABASE}
-    driverClassName: com.mysql.cj.jdbc.Driver
-    username: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
-    schema-generate: CREATE_DROP
-    dialect: MYSQL
+    url: ${DB_URI:`jdbc:mysql://localhost:3306`}/${DB_DATABASE}
+    driverClassName: ${DB_DRIVER:`com.mysql.cj.jdbc.Driver`}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    schema-generate: CREATE
+    dialect: ${DB_DIALECT:`MYSQL`}
 jpa:
   default:
     properties:
@@ -18,9 +18,9 @@ jpa:
         show_sql: true
 
 erp.itau:
-  host: http://${ITAU_HOST:`localhost:9091`}
+  host: http://${ITAU_URL:`localhost:9091`}
   consulta.clientes: ${CONSULTA_CLIENTES:`/api/v1/clientes`}
 
 bcb:
-  host: http://${BCB_HOST:`localhost:8082`}
+  host: http://${BCB_URL:`localhost:8082`}
   pix.keys: ${CONSULTA_CLIENTES:`/api/v1/pix/keys`}

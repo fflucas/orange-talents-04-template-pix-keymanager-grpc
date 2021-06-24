@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keymanager-grpc-configmap
+data:
+  DB_URI: "jdbc:postgresql://localhost:3306"
+  DB_DATABASE: "pix"
+  DB_DRIVER: "org.postgresql.Driver"
+  DB_USER: "dev"
+  DB_DIALECT: "POSTGRES"
+  ITAU_URL: "localhost:9091"
+  BCB_URL: "localhost:8082"
